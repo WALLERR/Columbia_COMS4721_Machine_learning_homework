@@ -3,7 +3,7 @@
 
 # # Problem 3 - (a)
 
-# In[ ]:
+# In[1]:
 
 
 import pandas as pd
@@ -11,12 +11,13 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import PolynomialFeatures
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 # ### define dictionay
 
-# In[ ]:
+# In[2]:
 
 
 label_dic = {
@@ -32,7 +33,7 @@ label_dic = {
 
 # ### read data from csv
 
-# In[ ]:
+# In[3]:
 
 
 data_dir = 'hw1-data/'
@@ -44,7 +45,7 @@ y_test = pd.read_csv(data_dir + 'y_test.csv', header=None)
 
 # ### calculate wRR
 
-# In[ ]:
+# In[4]:
 
 
 dim = X_train.shape[1]
@@ -59,7 +60,7 @@ wRR = np.array(wRR)
 
 # ### SVD decomposition
 
-# In[ ]:
+# In[5]:
 
 
 u, d, vT = np.linalg.svd(X)
@@ -67,7 +68,7 @@ u, d, vT = np.linalg.svd(X)
 
 # ### calculate df (degree of freedom) of lamba
 
-# In[ ]:
+# In[6]:
 
 
 df_lamb = np.zeros(5001)
@@ -77,7 +78,7 @@ for lamb in range(5001):
 
 # ### plot wRR versus df(lambda)
 
-# In[ ]:
+# In[7]:
 
 
 fig = plt.figure(figsize = (12, 8), dpi=300)
@@ -95,7 +96,7 @@ plt.savefig('wRR versus df(lambda) curves.png')
 
 # ### get new wRR and prediction of y
 
-# In[ ]:
+# In[8]:
 
 
 lamb_max = 51
@@ -105,7 +106,7 @@ y_pred = X_test.dot(wRR_test.T)
 
 # ### define RMSE calculation function
 
-# In[ ]:
+# In[9]:
 
 
 def RMSE(y_t, y_p):
@@ -116,7 +117,7 @@ def RMSE(y_t, y_p):
 
 # ### get RMSE array
 
-# In[ ]:
+# In[10]:
 
 
 RMSE_list = np.zeros(lamb_max)
@@ -126,7 +127,7 @@ for lamb in range(lamb_max):
 
 # ### plot RMSE versus lambda curves
 
-# In[ ]:
+# In[11]:
 
 
 fig = plt.figure(figsize = (12, 8), dpi=300)
@@ -140,7 +141,7 @@ plt.savefig('RMSE versus lambda curves.png')
 
 # ### Problem 3 - (d)
 
-# In[ ]:
+# In[12]:
 
 
 def process_data(data, p):
@@ -177,10 +178,10 @@ def process_data(data, p):
     return features_std
 
 
-# In[ ]:
+# In[19]:
 
 
-def plot_p(X_train, X_test, y_train, y_test, p, lamb_max):
+def get_RMSE(X_train, X_test, y_train, y_test, p, lamb_max):
     """Plot RMSE versus lambda in p-polynomial condition.
 
     Args:
@@ -209,19 +210,21 @@ def plot_p(X_train, X_test, y_train, y_test, p, lamb_max):
     
     for lamb in range(lamb_max):
         RMSE_list[lamb] = RMSE(y_test.values, y_pred_p[lamb].values)
-        
-    # plot RMSE versus lambda curves
-    fig = plt.figure(figsize = (12, 8), dpi=300)
-    plt.grid()
-    plt.xlabel('lambda')
-    plt.ylabel('RMSE')
-    plt.title('RMSE versus lambda curves')
-    plt.plot(RMSE_list)
-    plt.savefig('RMSE versus lambda curves in %d polynomial regression.png' %p)
+
+    return RMSE_list
 
 
-# In[ ]:
+# In[24]:
 
 
-plot_p(X_train, X_test, y_train, y_test, 1, 101)
+fig = plt.figure(figsize = (12, 8), dpi=300)
+plt.grid()
+plt.xlabel('lambda')
+plt.ylabel('RMSE')
+plt.title('RMSE versus lambda curves')
+for p in range(1, 4):
+    plot_RMSE = get_RMSE(X_train, X_test, y_train, y_test, p, 101)
+    plt.plot(plot_RMSE, label='%d polynomial regression' % p)
+plt.legend()
+plt.savefig('RMSE versus lambda curves in polynomial regression.png')
 
