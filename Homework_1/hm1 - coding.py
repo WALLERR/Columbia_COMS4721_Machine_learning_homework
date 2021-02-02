@@ -10,8 +10,6 @@ import pandas as pd
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import PolynomialFeatures
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
