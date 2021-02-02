@@ -155,30 +155,23 @@ def process_data(data, p):
     Returns:
         A dataframe with more dimensions which derive from polynomial process.
     """
-    dt = []
     data = data[data.columns[:-1]] # delete the last all-1 column
-    
-    # get new features of data with p-polynomial process
-    pf = PolynomialFeatures(degree=p).fit(data)
-    data_new = pf.transform(data)
-    columns_list = pf.get_feature_names(data.columns)
-    features = pd.DataFrame(data_new, columns=columns_list)
-    
-    # standardize new dimensions
-    ss = StandardScaler().fit(data_new)
-    data_new_std = ss.transform(data_new)
-    features_std = pd.DataFrame(data_new_std, columns=columns_list)
-    
-    # as for one dimension column, no standardization is required
-    for column in data:
-        features_std[column] = data[column]
-    
-    features_std['1'] = 1 
-    
-    return features_std
+    dt = [data]
+
+    # get new data with p-polynomial process
+    for i in range(2, p+1):
+        data_i = data ** i
+        for column in data_i.columns:
+            data_i[column] = (data_i[column] - data_i[column].mean()) / data_i[column].std()
+        data_i = data_i.rename(columns=lambda x: x + '^' + str(i))
+        dt.append(data_i)
+    dt = pd.concat(dt, axis=1)
+    dt['w0'] = 1
+        
+    return dt
 
 
-# In[19]:
+# In[13]:
 
 
 def get_RMSE(X_train, X_test, y_train, y_test, p, lamb_max):
@@ -188,6 +181,9 @@ def get_RMSE(X_train, X_test, y_train, y_test, p, lamb_max):
         X_train, ... , y_test: training and testing data.
         p: p-polynomial process.
         lamb_max: the range of lambda.
+        
+    Return:
+        RMSE curves.
     """
     # preprocess X data
     X_train_p = process_data(X_train, p)
@@ -214,7 +210,7 @@ def get_RMSE(X_train, X_test, y_train, y_test, p, lamb_max):
     return RMSE_list
 
 
-# In[24]:
+# In[14]:
 
 
 fig = plt.figure(figsize = (12, 8), dpi=300)
