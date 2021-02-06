@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# ### define dictionay
+# ### define a dictionay of column name
 
 # In[2]:
 
@@ -143,7 +143,7 @@ plt.savefig('RMSE versus lambda curves.png')
 
 
 def process_data(data, p):
-    """Preprocess dataframe for p-polynomial regression.
+    """Preprocesses dataframe for p-polynomial regression.
     According to the instruction, added p-polynomial dimension requires standardization
 
     Args:
@@ -173,19 +173,21 @@ def process_data(data, p):
 
 
 def get_RMSE(X_train, X_test, y_train, y_test, p, lamb_max):
-    """Plot RMSE versus lambda in p-polynomial condition.
+    """Gets a list of RMSE versus lambda in p-polynomial condition.
 
     Args:
         X_train, ... , y_test: training and testing data.
-        p: p-polynomial process.
+        p: p-th polynomial process.
         lamb_max: the range of lambda.
         
     Return:
-        RMSE curves.
+        RMSE lists.
     """
     # preprocess X data
-    X_train_p = process_data(X_train, p)
-    X_test_p = process_data(X_test, p)
+    X_p = pd.concat([X_train, X_test], axis=0)
+    X_p = process_data(X_p, p)
+    X_train_p = X_p.iloc[:len(X_train)]
+    X_test_p = X_p.iloc[-len(X_test):]
 
     dim_p = X_train_p.shape[1] # get the dimension of new training data
     wRR_p = []
@@ -218,7 +220,13 @@ plt.ylabel('RMSE')
 plt.title('RMSE versus lambda curves')
 for p in range(1, 4):
     plot_RMSE = get_RMSE(X_train, X_test, y_train, y_test, p, 101)
-    plt.plot(plot_RMSE, label='%d polynomial regression' % p)
+    plt.plot(plot_RMSE, label='Polynomial regression of degree p=%d' % p)
 plt.legend()
 plt.savefig('RMSE versus lambda curves in polynomial regression.png')
+
+
+# In[ ]:
+
+
+
 
