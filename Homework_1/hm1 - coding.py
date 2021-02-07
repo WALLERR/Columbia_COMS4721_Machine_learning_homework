@@ -180,7 +180,7 @@ def get_RMSE(X_train, X_test, y_train, y_test, p, lamb_max):
         p: p-th polynomial process.
         lamb_max: the range of lambda.
         
-    Return:
+    Returns:
         RMSE lists.
     """
     # preprocess X data
