@@ -224,9 +224,3 @@ for p in range(1, 4):
 plt.legend()
 plt.savefig('RMSE versus lambda curves in polynomial regression.png')
 
-
-# In[ ]:
-
-
-
-
